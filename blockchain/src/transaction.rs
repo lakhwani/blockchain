@@ -66,23 +66,23 @@ impl Transaction for Transfer {
     }
 }
 
-pub enum Transactions {
-    CreateAccount(CreateAccount),
-    Transfer(Transfer),
+pub enum TransactionType {
+    CreateAccountTx(CreateAccount),
+    TransferTx(Transfer),
 }
 
-impl Transactions {
+impl TransactionType {
     pub fn validate(&self, accounts: &HashMap<u32, u32>) -> bool {
         match self {
-            Transactions::CreateAccount(tx) => tx.validate(accounts),
-            Transactions::Transfer(tx) => tx.validate(accounts),
+            Transactions::CreateAccountTx(tx) => tx.validate(accounts),
+            Transactions::TransferTx(tx) => tx.validate(accounts),
         }
     }
 
     pub fn execute(&self, accounts: &mut HashMap<u32, u32>) {
         match self {
-            Transactions::CreateAccount(tx) => tx.execute(accounts),
-            Transactions::Transfer(tx) => tx.execute(accounts),
+            Transactions::CreateAccountTx(tx) => tx.execute(accounts),
+            Transactions::TransferTx(tx) => tx.execute(accounts),
         }
     }
 }
