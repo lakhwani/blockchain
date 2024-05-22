@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 pub struct Block {
-    timestamp: u32,
-    data: Vec<Transaction>::new(),
+    pub timestamp: u32,
+    pub data: Vec<dyn Transaction>,
 }
 
 pub enum List {

@@ -2,74 +2,87 @@ use std::collections::HashMap;
 
 pub trait Transaction {
     fn validate(&self, accounts: &HashMap<u32, u32>) -> bool;
-    fn addToPool(&self, accounts: &mut HashMap<u32, u32>, txPool: &mut Vec<Transaction>) -> f64;
     fn execute(&self, accounts: &mut HashMap<u32, u32>) -> bool;
 }
 
 pub struct CreateAccount {
     pub account_id: u32,
-    pub startingBalance: u32,
+    pub starting_balance: u32,
 }
 
 pub struct Transfer {
-    pub fromAccount: u32,
-    pub toAccount: u32,
+    pub from_account: u32,
+    pub to_account: u32,
     pub amount: u32,
 }
 
 impl Transaction for CreateAccount {
-    fn validate(&self, accounts: &mut HashMap<u32, u32>) {
+    fn validate(&self, accounts: &HashMap<u32, u32>) -> bool {
         if &self.startingBalance < 0 {
-            println!("Starting balance does not exists:", self.accountId);
+            println!(
+                "Starting balance must be greater than 0: {}",
+                self.starting_balance
+            );
             return False;
         }
         if accounts.contains_key(&self.accountId) {
-            println!("Account ID already exists:", self.accountId);
+            println!("Account ID already exists: {}", self.account_id);
             return False;
         }
         return True;
     }
 
-    fn addToPool(&self, accounts: &mut HashMap<u32, u32>, txPool: &mut Vec<Transaction>) {
-        if validate(&self, accounts, txPool) {
-            txPool.push(self);
-        }
-    }
-
     fn execute(&self, accounts: &mut HashMap<u32, u32>) {
-        accounts.insert(&self.accountId, startingBalance);
+        accounts.insert(self.account_id, self.starting_balance);
     }
 }
 
 impl Transaction for Transfer {
     fn validate(&self, accounts: &mut HashMap<u32, u32>) {
-        if !accounts.contains_key(&self.fromAccount) {
-            println!("From Account does not exist:", self.fromAccount);
+        if !accounts.contains_key(&self.from_account) {
+            println!("From Account does not exist: {}", self.from_account);
             return False;
         }
-        if !accounts.contains_key(&self.toAccount) {
-            println!("To Account does not exist:", self.fromAccount);
+        if !accounts.contains_key(&self.to_account) {
+            println!("To Account does not exist: {}", self.to_account);
             return False;
         }
-        let Some(fromBalance) = accounts.get(&self.fromAccount);
-        if fromBalance <= amount {
-            println!("User does not have sufficient balance.");
+        let cur_from_balance = accounts[&self.from_account];
+        if cur_from_balance <= self.amount {
+            println!(
+                "User does not have sufficient balance in account: {}",
+                self.from_account
+            );
             return False;
         }
         return True;
     }
 
-    fn addToPool(&self, accounts: &mut HashMap<u32, u32>, txPool: &mut Vec<Transaction>) {
-        if validate(&self, accounts, txPool) {
-            txPool.push(self)
-        }
-    }
-
     fn execute(&self, accounts: &mut HashMap<u32, u32>) {
-        validate(&self, accounts);
         let from_balance = accounts[&self.from_account];
         let to_balance = accounts[&self.to_account];
         accounts.insert(&self.fromAccount, oldFromBalance - &self.amount);
         accounts.insert(&self.toAccount, oldToBalance + &self.amount)
+    }
+}
+
+pub enum Transactions {
+    CreateAccount(CreateAccount),
+    Transfer(Transfer),
+}
+
+impl Transactions {
+    pub fn validate(&self, accounts: &HashMap<u32, u32>) -> bool {
+        match self {
+            Transactions::CreateAccount(tx) => tx.validate(accounts),
+            Transactions::Transfer(tx) => tx.validate(accounts),
+        }
+    }
+
+    pub fn execute(&self, accounts: &mut HashMap<u32, u32>) {
+        match self {
+            Transactions::CreateAccount(tx) => tx.execute(accounts),
+            Transactions::Transfer(tx) => tx.execute(accounts),
+        }
     }
 }
