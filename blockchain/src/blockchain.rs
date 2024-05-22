@@ -1,7 +1,6 @@
 use crate::transaction::TransactionType;
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
-
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub struct Block {
     pub timestamp: u32,
@@ -16,39 +15,43 @@ pub struct Blockchain {
 
 impl Blockchain {
     pub fn new() -> Self {
-        Blockchain { 
-            accounts: HashMap<u32, u32>::new(), 
-            blocks: Vec<Block>::new(), 
-            transaction_pool: Vec<TransactionType>::new() 
+        Blockchain {
+            accounts: HashMap::new(),
+            blocks: Vec::new(),
+            transaction_pool: Vec::new(),
         }
     }
 
-    pub fn get_balance(&mut self, accountId: u32) -> Option<u32> {
+    pub fn get_balance(&mut self, account_id: u32) -> Option<u32> {
         self.accounts.get(&account_id).copied()
     }
 
-    pub fn add_transaction(&mut self, tx: TransactionType){
+    pub fn add_transaction(&mut self, tx: TransactionType) {
         self.transaction_pool.push(tx);
     }
 
-    pub fn mine_block(&mut self) -> Block {
+    pub fn mine_block(&mut self) -> () {
         let mut new_accounts = self.accounts.clone();
-        let mut block_data = Vec<TransactionType>::new();
+        let mut block_data: Vec<TransactionType> = Vec::new();
 
         for tx in &self.transaction_pool {
-            if (tx.validate(&new_accounts)){
+            if tx.validate(&new_accounts) {
                 tx.execute(&mut new_accounts);
-                block_data.push(tx.clone());
+                block_data.push(*(tx));
             }
         }
 
-        let now = SystemTime::now();
-        let since_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
-        // Convert to seconds and ensure the value is within u32 range (0 to 4294967295)
-        let seconds = since_epoch.as_secs() % u32::MAX as u64;
+        let seconds = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as u32;
 
-        let mut block = Block { timestamp: seconds, data: block_data };
-        &self.blocks.accounts = new_accounts;
-        self.blocks.push(block) 
+        let block = Block {
+            timestamp: seconds,
+            data: block_data,
+        };
+
+        self.accounts = new_accounts;
+        self.blocks.push(block);
     }
 }
