@@ -49,11 +49,10 @@ pub fn parse_command(input: &str) -> Result<Command, String> {
 
 pub fn help_text() -> String {
     let help = "Available commands:\n\
-                b start-node        - Start the blockchain node\n\
-                b client            - Send consequent requests to the node\n\
+                b start-node                                        - Start the blockchain node\n\
                 b create-account <id-of-account> <starting-balance> - Create a new account with a starting balance\n\
                 b transfer <from-account> <to-account> <amount>     - Transfer funds from one account to another\n\
-                b balance <account> - Check the balance of an account\n\
-                b help              - Show this help message\n";
+                b balance <account>                                 - Check the balance of an account\n\
+                b help                                              - Show this help message\n";
     help.to_string()
 }
