@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 pub trait Transaction {
     fn validate(&self, accounts: &HashMap<u32, u32>) -> bool;
-    fn execute(&self, accounts: &mut HashMap<u32, u32>) -> ();
+    fn execute(&self, accounts: &mut HashMap<u32, u32>);
 }
 
 #[derive(Copy, Clone)]
@@ -20,18 +20,11 @@ pub struct Transfer {
 
 impl Transaction for CreateAccount {
     fn validate(&self, accounts: &HashMap<u32, u32>) -> bool {
-        if &self.starting_balance < &0 {
-            println!(
-                "Starting balance must be greater than 0: {}",
-                self.starting_balance
-            );
-            return false;
-        }
         if accounts.contains_key(&self.account_id) {
             println!("Account ID already exists: {}", self.account_id);
             return false;
         }
-        return true;
+        true
     }
 
     fn execute(&self, accounts: &mut HashMap<u32, u32>) {
@@ -49,15 +42,11 @@ impl Transaction for Transfer {
             println!("To Account does not exist: {}", self.to_account);
             return false;
         }
-        let cur_from_balance = accounts[&self.from_account];
-        if cur_from_balance <= self.amount {
-            println!(
-                "User does not have sufficient balance in account: {}",
-                self.from_account
-            );
+        if accounts[&self.from_account] < self.amount {
+            println!("Insufficient funds in account: {}", self.from_account);
             return false;
         }
-        return true;
+        true
     }
 
     fn execute(&self, accounts: &mut HashMap<u32, u32>) {

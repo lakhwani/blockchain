@@ -22,22 +22,20 @@ impl Blockchain {
         }
     }
 
-    pub fn get_balance(&mut self, account_id: u32) -> Option<u32> {
-        self.accounts.get(&account_id).copied()
-    }
-
     pub fn add_transaction(&mut self, tx: TransactionType) {
-        self.transaction_pool.push(tx);
+        if tx.validate(&self.accounts) {
+            self.transaction_pool.push(tx);
+        }
     }
 
-    pub fn mine_block(&mut self) -> () {
+    pub fn mine_block(&mut self) {
         let mut new_accounts = self.accounts.clone();
         let mut block_data: Vec<TransactionType> = Vec::new();
 
         for tx in &self.transaction_pool {
             if tx.validate(&new_accounts) {
                 tx.execute(&mut new_accounts);
-                block_data.push(*(tx));
+                block_data.push(*tx);
             }
         }
 
@@ -53,5 +51,6 @@ impl Blockchain {
 
         self.accounts = new_accounts;
         self.blocks.push(block);
+        self.transaction_pool.clear();
     }
 }
