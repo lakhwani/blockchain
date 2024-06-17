@@ -22,7 +22,7 @@ fn handle_client(stream: TcpStream, blockchain: Arc<Mutex<Blockchain>>) {
                         account_id: id,
                         starting_balance: balance,
                     });
-                    let mut blockchain = blockchain.lock().unwrap();
+                    let mut blockchain: std::sync::MutexGuard<Blockchain> = blockchain.lock().unwrap();
                     blockchain.add_transaction(tx);
                     stream
                         .write(b"Create account transaction added.\n")

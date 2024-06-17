@@ -3,6 +3,7 @@
 This is a prototype blockchain implementation in Rust. It supports creating accounts, transferring funds between accounts, and checking account balances. Blocks are mined at regular intervals.
 
 ## Project Structure
+
 ```
 
 blockchain/
@@ -17,7 +18,7 @@ blockchain/
 │
 └── Cargo.toml
 
-````
+```
 
 ## Getting Started
 
@@ -30,9 +31,10 @@ blockchain/
 1. **Start the Blockchain Server:**
 
    Open a terminal and run the following command to start the blockchain server:
+
    ```sh
    cargo run
-
+   ```
 
 Then type the following command to start the server:
 
